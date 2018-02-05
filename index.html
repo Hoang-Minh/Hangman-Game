@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Page Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+</head>
+<body>
+    <h1>The Hangman Game</h1>
+    <p>Current word</p><span id="currentWord"></span>
+    <p>Wins: <span id="win"></span> </p>
+    <p>Losses: <span id="loss"></span> </p>
+    <p>Guesses left: <span id="guessesLeft"></span> </p>
+    <p>Your guesses so far: <span id="userGuesses"></span> </p>    
+    
+    <script>
+        // array of words that are used in the game
+        var words = ["Anaheim", "Irvine", "Garden Grove", "Santa Ana", "Lake Forest", "Orange"];         
+        var computerGuess = "";
+        // console.log(computerGuess);       
+        
+        var win = 0;
+        var loss = 0;
+        
+        var unknownChar = "x";
+        var guessesLeft;
+        var userGuesses;
+        var unknownCharArray;
+        
+        resetGameStats();
+        displayComputerGuessWord(unknownChar);
+        displayGameStats();
+        
+        // when user pressed and release a key
+        document.onkeyup = function(event) {
+            var guess = event.key;
+            
+            // if guess has not been guessed before then do nothing
+            // otherwise, go into the if else statement and execute action
+            if(userGuesses.indexOf(guess) === -1) {
+                // debugger;
+                // decrease the number of guesses by 1
+                guessesLeft--;
+                var isFound = false;
+
+                for(var i = 0; i < computerGuess.length; i++) {
+                
+                    if(guess.toLowerCase() === computerGuess[i].toLowerCase()) {
+                            unknownCharArray[i] = guess; // assign the correct guess character to the array word
+                            isFound = true;                    
+                        }                
+                }
+
+                if(!isFound) {                
+                               
+                    if(guessesLeft === 0) { // no more guesses allowed
+                        // increase loss by one                        
+                        loss++;
+
+                        resetGameStats();
+                        displayComputerGuessWord(unknownChar);                        
+                    }
+                    else {
+                        if(guess === " ") {
+                            userGuesses.unshift("space");
+                        }
+                        else {
+                            userGuesses.unshift(guess);
+                        }                    
+                    }                
+                }
+                else {
+                    if(unknownCharArray.indexOf(unknownChar) > -1) { // as long as there is "_" in asteriks
+                        if(guessesLeft === 0) {
+                            loss++;
+                            resetGameStats();
+                            displayComputerGuessWord(unknownChar);
+                        }
+                    }
+                    else {                        
+                        win++;
+                        resetGameStats();
+                        displayComputerGuessWord(unknownChar);
+                    }
+                }
+    
+                displayGameStats();                
+            }
+        }
+        
+        // display stats
+        function displayGameStats() {
+            document.getElementById("win").innerHTML = win;
+            document.getElementById("loss").innerHTML = loss;
+            document.getElementById("guessesLeft").innerHTML = guessesLeft;
+            document.getElementById("userGuesses").innerHTML = userGuesses;
+
+            // display each characters, each separated by an empty space         
+            document.getElementById("currentWord").innerHTML = unknownCharArray.join("");
+        }
+
+        // reset game stats and have computer re-guess another word
+        // DO NOT RESET NUMBER OF WINS AND LOSSES
+        function resetGameStats() {
+            guessesLeft = 13;
+            userGuesses = [];            
+            unknownCharArray = [];
+        }
+        
+        function displayComputerGuessWord(unknownChar) {
+            // computer guess
+            computerGuess = words[Math.floor(Math.random() * words.length)];
+            console.log(computerGuess);
+            for(var i = 0; i < computerGuess.length; i++) {
+                unknownCharArray.unshift(unknownChar);
+            }
+        }
+
+    </script>
+    
+</body>
+</html>
